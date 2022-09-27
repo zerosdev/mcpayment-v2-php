@@ -8,7 +8,7 @@ trait SetterGetter
     {
         $type = strtolower(substr($name, 0, 3));
         $property = substr($name, 3);
-        $property = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $property);
+        $property = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $property));
 
         switch ($type) {
             case 'set':
@@ -21,8 +21,13 @@ trait SetterGetter
         }
     }
 
-    public function __get($name)
+    public function __get($property)
     {
         return property_exists($this, $property) ? $this->{$property} : null;
+    }
+
+    public function __set($property, $value)
+    {
+        $this->{$property} = $value;
     }
 }

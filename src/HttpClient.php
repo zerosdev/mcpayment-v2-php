@@ -4,23 +4,27 @@ namespace ZerosDev\MCPayment;
 
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\TransferStats;
+use stdClass;
 
 class HttpClient
 {
-    protected $client;
-    protected $baseUrl;
-    protected $xVersion;
-    protected $merchantId;
-    protected $secretUnboundId;
-    protected $hashKey;
+    public $configs = [];
+    public $client;
+    public $baseUrl;
+    public $xVersion;
+    public $merchantId;
+    public $secretUnboundId;
+    public $hashKey;
 
     public function __construct(array $configs = [])
     {
-        $this->baseUrl = isset($configs['base_url']) ? $configs['base_url'] : null;
-        $this->xVersion = isset($configs['x_version']) ? $configs['x_version'] : null;
-        $this->merchantId = isset($configs['merchant_id']) ? $configs['merchant_id'] : null;
-        $this->secretUnboundId = isset($configs['secret_unbound_id']) ? $configs['secret_unbound_id'] : null;
-        $this->hashKey = isset($configs['hash_key']) ? $configs['hash_key'] : null;
+        $this->configs = $configs;
+        $this->baseUrl = isset($this->configs['base_url']) ? $this->configs['base_url'] : null;
+        $this->xVersion = isset($this->configs['x_version']) ? $this->configs['x_version'] : null;
+        $this->merchantId = isset($this->configs['merchant_id']) ? $this->configs['merchant_id'] : null;
+        $this->secretUnboundId = isset($this->configs['secret_unbound_id']) ? $this->configs['secret_unbound_id'] : null;
+        $this->hashKey = isset($this->configs['hash_key']) ? $this->configs['hash_key'] : null;
 
         $this->createClient();
     }
@@ -33,20 +37,22 @@ class HttpClient
             'http_errors' => false,
             'headers' => [
                 'Authorization' => 'Basic ' . base64_encode($this->merchantId . ':' . $this->secretUnboundId),
-            ]
+            ],
         ]);
     }
 
-    public function send($method, $endpoint, array $payload)
+    public function send($method, $endpoint, array $payload, array $headers = [])
     {
         $endpoint = ltrim($endpoint, '/');
         $localMethod = strtolower($method);
 
-        $return = new \stdClass();
+        $return = new stdClass();
+        $return->config = $this->configs;
+        $return->request = new stdClass();
+        $return->response = new stdClass();
 
         $return->request->url = null;
         $return->request->method = $method;
-        $return->request->headers = $this->client->getConfig('headers');
         $return->request->body = json_decode(json_encode($payload));
 
         $return->response->status = 0;
@@ -58,9 +64,17 @@ class HttpClient
         try {
             $response = $this->client->{$localMethod}($endpoint, [
                 'json' => $payload,
+                'headers' => $headers,
+                'on_stats' => function (TransferStats $stats) use (&$return) {
+                    $return->request->url = (string) $stats->getEffectiveUri();
+                }
             ]);
+            $return->request->headers = array_merge(
+                (array) $this->client->getConfig('headers'),
+                $headers
+            );
             $return->response->status = $response->getStatusCode();
-            $body = $response->getBody()->getContent();
+            $body = $response->getBody()->getContents();
             $return->response->body = $body;
             $data = json_decode($body);
             if (json_last_error() !== JSON_ERROR_NONE) {

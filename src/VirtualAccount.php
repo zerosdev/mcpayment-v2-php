@@ -16,8 +16,12 @@ class VirtualAccount
         $this->client = $client;
     }
 
-    public function create()
+    public function create(array $fields = [])
     {
+        foreach ($fields as $key => $value) {
+            $this->{$key} = $value;
+        }
+
         $this->requires([
             'external_id',
             'order_id',
@@ -43,6 +47,12 @@ class VirtualAccount
             'callback_url' => $this->callback_url,
         ];
 
-        return $this->client->send('POST', '/va', $payload);
+        $payload = array_filter($payload, function ($p) {
+            return !is_null($p);
+        });
+
+        return $this->client->send('POST', '/va', $payload, [
+            'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
+        ]);
     }
 }
