@@ -37,6 +37,7 @@ class HttpClient
             'http_errors' => false,
             'headers' => [
                 'Authorization' => 'Basic ' . base64_encode($this->merchantId . ':' . $this->secretUnboundId),
+                'X-Version' => $this->xVersion,
             ],
         ]);
     }

@@ -1,3 +1,5 @@
 vendor
 /composer.lock
 /example.php
+/ovo-callback.php
+/ovo-callback.log
