@@ -24,12 +24,5 @@
         "psr-4": {
             "ZerosDev\\MCPayment\\": "src/"
         }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "ZerosDev\\MCPayment\\Laravel\\ServiceProvider"
-            ]
-        }
     }
 }
