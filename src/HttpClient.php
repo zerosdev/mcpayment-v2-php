@@ -56,7 +56,7 @@ class HttpClient
         $return->request->method = $method;
         $return->request->body = json_decode(json_encode($payload));
 
-        $return->response->status = 0;
+        $return->response->http_status = 0;
         $return->response->body = null;
         $return->response->headers = [];
         $return->response->decoded = null;
@@ -74,7 +74,7 @@ class HttpClient
                 (array) $this->client->getConfig('headers'),
                 $headers
             );
-            $return->response->status = $response->getStatusCode();
+            $return->response->http_status = $response->getStatusCode();
             $body = $response->getBody()->getContents();
             $return->response->body = $body;
             $data = json_decode($body);
