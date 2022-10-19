@@ -57,7 +57,7 @@ class Ewallet
             return !is_null($p);
         });
 
-        return $this->client->send('POST', '/ewallet/v2/create-payment', $payload, [
+        return $this->client->send('POST', 'ewallet/v2/create-payment', $payload, [
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }
@@ -88,7 +88,7 @@ class Ewallet
             return !is_null($p);
         });
 
-        return $this->client->send('POST', '/ewallet/v2/inquiry', $payload, [
+        return $this->client->send('POST', 'ewallet/v2/inquiry', $payload, [
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }
@@ -131,7 +131,7 @@ class Ewallet
             return !is_null($p);
         });
 
-        return $this->client->send('POST', '/ewallet/v2/create-qr', $payload, [
+        return $this->client->send('POST', 'ewallet/v2/create-qr', $payload, [
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }

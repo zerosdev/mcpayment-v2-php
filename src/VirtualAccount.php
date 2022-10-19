@@ -51,7 +51,7 @@ class VirtualAccount
             return !is_null($p);
         });
 
-        return $this->client->send('POST', '/va', $payload, [
+        return $this->client->send('POST', 'va', $payload, [
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }
@@ -82,7 +82,7 @@ class VirtualAccount
             return !is_null($p);
         });
 
-        return $this->client->send('POST', '/va/inquiry', $payload, [
+        return $this->client->send('POST', 'va/inquiry', $payload, [
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }
@@ -113,7 +113,7 @@ class VirtualAccount
             return !is_null($p);
         });
 
-        return $this->client->send('POST', '/va/cancel', $payload, [
+        return $this->client->send('POST', 'va/cancel', $payload, [
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }
