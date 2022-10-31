@@ -135,4 +135,35 @@ class Ewallet
             'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
         ]);
     }
+
+    public function void(array $fields = [])
+    {
+        foreach ($fields as $key => $value) {
+            $this->{$key} = $value;
+        }
+
+        $this->requires([
+            'transaction_id',
+            'external_id',
+            'order_id',
+            'payment_method',
+            'payment_channel',
+        ]);
+
+        $payload = [
+            'transaction_id' => $this->transaction_id,
+            'external_id' => $this->external_id,
+            'order_id' => $this->order_id,
+            'payment_method' => $this->payment_method,
+            'payment_channel' => $this->payment_channel,
+        ];
+
+        $payload = array_filter($payload, function ($p) {
+            return !is_null($p);
+        });
+
+        return $this->client->send('POST', 'ewallet/v2/void', $payload, [
+            'X-Req-Signature' => hash('sha256', $this->client->configs['hash_key'].$payload['external_id'].$payload['order_id'])
+        ]);
+    }
 }
