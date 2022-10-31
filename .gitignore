@@ -1,5 +1,4 @@
 vendor
-/composer.lock
 /example.php
 *-callback.php
 *-callback.log
